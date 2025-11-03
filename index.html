@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007bff">
+    <title>فرم گزارش بازدید و پشتیبانی حضوری</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Icons -->
+    <link rel="icon" href="icons/icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <style>
+        body{font-family:'Tahoma',sans-serif;background-color:#f5f7fa;margin:0;padding:20px;color:#333}.container{max-width:900px;margin:0 auto;background:white;padding:40px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}.header{text-align:center;border-bottom:3px solid #007bff;padding-bottom:20px;margin-bottom:30px}.header h1{color:#007bff;font-size:28px;margin:0}.header p{color:#666;font-size:16px}.form-group{margin-bottom:20px}.form-row{display:flex;gap:20px}.form-row .form-group{flex:1}label{display:block;font-weight:700;color:#555;margin-bottom:5px}input,textarea,select{width:100%;padding:10px;border:2px solid #ddd;border-radius:5px;font-size:14px;box-sizing:border-box;transition:border-color .3s}input:focus,textarea:focus,select:focus{border-color:#007bff;outline:0}textarea{height:80px;resize:vertical}.checkbox-group{display:flex;flex-wrap:wrap;gap:15px}.checkbox-group label{display:flex;align-items:center;font-weight:400;margin:0}.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #eee;color:#777;font-size:12px}.signature{display:flex;gap:20px;margin-top:20px}.signature .form-group{flex:1}@media (max-width:600px){.form-row,.signature{flex-direction:column}.container{padding:20px}input,select{font-size:16px}}/* Validation styles */.error{border-color:#dc3545 !important}
+    </style>
+    <!-- Lazy load libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧾 فرم گزارش بازدید و پشتیبانی حضوری</h1>
+            <p>ثبت دقیق جزئیات بازدید برای پیگیری و بایگانی</p>
+            <small>شماره گزارش: <input type="text" id="reportNumber" style="width:150px;display:inline;border:1px solid #ddd;padding:5px;" placeholder="مثال: RW-001" required pattern="[A-Z]{2}-\d{3}"> | 
+            تاریخ گزارش: <input type="date" id="reportDate" required></small>
+        </div>
+
+        <form id="reportForm" novalidate>
+            <!-- بخش اطلاعات بازدیدکننده -->
+            <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">اطلاعات بازدیدکننده/پشتیبانی</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="visitorName">نام و نام خانوادگی:</label>
+                    <input type="text" id="visitorName" name="visitorName" required aria-label="نام بازدیدکننده">
+                </div>
+                <div class="form-group">
+                    <label for="position">سمت/نقش:</label>
+                    <input type="text" id="position" name="position" placeholder="مثال: کارشناس فنی">
+                </div>
+            </div>
+
+            <!-- بخش اطلاعات مشتری -->
+            <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">اطلاعات مشتری/محل بازدید</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="clientName">نام مشتری:</label>
+                    <input type="text" id="clientName" name="clientName" required aria-label="نام مشتری">
+                </div>
+                <div class="form-group">
+                    <label for="clientContact">شماره تماس:</label>
+                    <input type="tel" id="clientContact" name="clientContact" pattern="[0-9]{11}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="address">آدرس محل بازدید:</label>
+                <input type="text" id="address" name="address" placeholder="آدرس کامل">
+            </div>
+
+            <!-- جزئیات بازدید -->
+            <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">جزئیات بازدید</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startTime">ساعت شروع:</label>
+                    <input type="time" id="startTime" name="startTime">
+                </div>
+                <div class="form-group">
+                    <label for="endTime">ساعت پایان:</label>
+                    <input type="time" id="endTime" name="endTime">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="purpose">هدف بازدید:</label>
+                <select id="purpose" name="purpose" required>
+                    <option value="">انتخاب کنید</option>
+                    <option value="routine">بازدید دوره‌ای</option>
+                    <option value="complaint">پشتیبانی بر اساس شکایت</option>
+                    <option value="maintenance">نگهداری و تعمیر</option>
+                    <option value="inspection">بازرسی فنی</option>
+                    <option value="other">سایر</option>
+                </select>
+            </div>
+
+            <!-- مسائل و اقدامات -->
+            <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">مسائل مشاهده شده و اقدامات</h3>
+            <div class="form-group">
+                <label for="issues">مسائل و مشکلات مشاهده شده:</label>
+                <textarea id="issues" name="issues" placeholder="توضیح دقیق مسائل فنی، ظاهری یا عملیاتی..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="actions">اقدامات انجام شده:</label>
+                <textarea id="actions" name="actions" placeholder="لیست اقدامات، تعمیرات، تنظیمات..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="recommendations">توصیه‌ها و پیگیری‌های بعدی:</label>
+                <textarea id="recommendations" name="recommendations" placeholder="پیشنهادات برای بهبود یا بازدید بعدی..."></textarea>
+            </div>
+
+            <!-- وضعیت نهایی -->
+            <div class="form-group">
+                <label for="status">وضعیت نهایی:</label>
+                <select id="status" name="status" required>
+                    <option value="">انتخاب کنید</option>
+                    <option value="resolved">حل شده</option>
+                    <option value="inProgress">در حال بررسی</option>
+                    <option value="pending">نیاز به پیگیری</option>
+                    <option value="escalated">ارجاع به سطح بالاتر</option>
+                </select>
+            </div>
+
+            <!-- امضا -->
+            <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">امضا و تأیید</h3>
+            <div class="signature">
+                <div class="form-group">
+                    <label for="visitorSign">امضای بازدیدکننده:</label>
+                    <input type="text" id="visitorSign" name="visitorSign" placeholder="نام و امضا دیجیتال">
+                </div>
+                <div class="form-group">
+                    <label for="clientSign">امضای مشتری:</label>
+                    <input type="text" id="clientSign" name="clientSign" placeholder="نام و امضا دیجیتال">
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:30px;">
+                <button type="submit" id="submitBtn" style="background:#007bff;color:white;padding:12px 30px;border:none;border-radius:5px;font-size:16px;cursor:pointer;">ذخیره و ارسال گزارش</button>
+            </div>
+        </form>
+
+        <div class="footer">
+            <p>تهیه شده توسط: داده پردازان موج مبتکر | تماس: ۰۹۱۱۱۵۸۲۴۶۶ | ایمیل: info@innowaveco.ir</p>
+            <p><small>این فرم برای بایگانی و پیگیری استفاده شود. تاریخ چاپ: <span id="printDate"></span></small></p>
+        </div>
+    </div>
+
+    <script>
+        // PWA: Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed', err));
+        }
+
+        // Draft Auto-save
+        const form = document.getElementById('reportForm');
+        const saveDraft = () => {
+            const data = new FormData(form).entries();
+            const draft = Object.fromEntries(data);
+            localStorage.setItem('reportDraft', JSON.stringify(draft));
+        };
+        form.addEventListener('input', () => setTimeout(saveDraft, 10000)); // هر 10s
+        window.addEventListener('beforeunload', saveDraft);
+
+        // Load Draft
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportDate').value = today;
+            document.getElementById('printDate').textContent = new Date().toLocaleDateString('fa-IR');
+            const draft = localStorage.getItem('reportDraft');
+            if (draft) {
+                const data = JSON.parse(draft);
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = data[key];
+                });
+            }
+        });
+
+        // Validation
+        form.addEventListener('submit', (e) => {
+            let valid = true;
+            form.querySelectorAll('[required]').forEach(el => {
+                if (!el.value.trim()) {
+                    el.classList.add('error');
+                    valid = false;
+                } else el.classList.remove('error');
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('لطفاً فیلدهای الزامی را پر کنید.');
+                return;
+            }
+            // Pattern check
+            const tel = document.getElementById('clientContact');
+            if (tel.value && !tel.pattern.test(tel.value.replace(/[^0-9]/g, ''))) {
+                tel.classList.add('error');
+                e.preventDefault();
+                alert('شماره تماس نامعتبر است.');
+                return;
+            }
+        });
+
+        // Submit Handler (همان کد قبلی با بهبود)
+        function getStatusText(statusValue) {
+            const statusMap = {'resolved':'حل شده','inProgress':'در حال بررسی','pending':'نیاز به پیگیری','escalated':'ارجاع به سطح بالاتر'};
+            return statusMap[statusValue] || statusValue;
+        }
+        function getPurposeText(purposeValue) {
+            const purposeMap = {'routine':'بازدید دوره‌ای','complaint':'پشتیبانی بر اساس شکایت','maintenance':'نگهداری و تعمیر','inspection':'بازرسی فنی','other':'سایر'};
+            return purposeMap[purposeValue] || purposeValue;
+        }
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            data.timestamp = new Date().toISOString();
+
+            console.log('گزارش جدید:', data);
+            const statusText = getStatusText(data.status);
+            const summary = `گزارش با موفقیت ذخیره شد!\nشماره: ${data.reportNumber || 'نامشخص'}\nمشتری: ${data.clientName || 'نامشخص'}\nهدف: ${getPurposeText(data.purpose) || 'نامشخص'}\nوضعیت: ${statusText}\nتاریخ: ${data.reportDate}`;
+            alert(summary);
+
+            // JSON Download
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `گزارش-بازدید-${data.reportNumber || 'نامشخص'}-${data.reportDate}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // PDF Generation
+            const element = document.querySelector('.container');
+            const opt = {
+                margin: 0.5,
+                filename: `گزارش-بازدید-${data.reportNumber || 'نامشخص'}-${data.reportDate}.pdf`,
+                image: {type: 'jpeg', quality: 0.98},
+                html2canvas: {scale: 2, useCORS: true, letterRendering: true, allowTaint: true},
+                jsPDF: {unit: 'in', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true, floatPrecision: 16}
+            };
+            html2pdf().set(opt).from(element).save().catch(error => {
+                console.error('خطا در تولید PDF:', error);
+                alert('خطا در تولید PDF. لطفاً از JSON استفاده کنید.');
+            });
+
+            // Email
+            const subject = encodeURIComponent(`گزارش بازدید - ${data.reportNumber || 'نامشخص'}`);
+            const body = encodeURIComponent(summary);
+            window.open(`mailto:info@innowaveco.ir?subject=${subject}&body=${body}`, '_blank');
+
+            localStorage.removeItem('reportDraft'); // Clear draft
+        });
+    </script>
+</body>
+</html>
