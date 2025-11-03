@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#007bff">
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>فرم گزارش بازدید و پشتیبانی حضوری</title>
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <!-- Icons -->
     <link rel="icon" href="icons/icon-192.png" sizes="192x192">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <style>
-        body{font-family:'Tahoma',sans-serif;background-color:#f5f7fa;margin:0;padding:20px;color:#333}.container{max-width:900px;margin:0 auto;background:white;padding:40px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}.header{text-align:center;border-bottom:3px solid #007bff;padding-bottom:20px;margin-bottom:30px}.header h1{color:#007bff;font-size:28px;margin:0}.header p{color:#666;font-size:16px}.form-group{margin-bottom:20px}.form-row{display:flex;gap:20px}.form-row .form-group{flex:1}label{display:block;font-weight:700;color:#555;margin-bottom:5px}input,textarea,select{width:100%;padding:10px;border:2px solid #ddd;border-radius:5px;font-size:14px;box-sizing:border-box;transition:border-color .3s}input:focus,textarea:focus,select:focus{border-color:#007bff;outline:0}textarea{height:80px;resize:vertical}.checkbox-group{display:flex;flex-wrap:wrap;gap:15px}.checkbox-group label{display:flex;align-items:center;font-weight:400;margin:0}.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #eee;color:#777;font-size:12px}.signature{display:flex;gap:20px;margin-top:20px}.signature .form-group{flex:1}@media (max-width:600px){.form-row,.signature{flex-direction:column}.container{padding:20px}input,select{font-size:16px}}/* Validation styles */.error{border-color:#dc3545 !important}
+        body{font-family:'Tahoma',sans-serif;background-color:#f5f7fa;margin:0;padding:20px;color:#333}.container{max-width:900px;margin:0 auto;background:white;padding:40px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}.header{text-align:center;border-bottom:3px solid #007bff;padding-bottom:20px;margin-bottom:30px}.header h1{color:#007bff;font-size:28px;margin:0}.header p{color:#666;font-size:16px}.form-group{margin-bottom:20px}.form-row{display:flex;gap:20px}.form-row .form-group{flex:1}label{display:block;font-weight:700;color:#555;margin-bottom:5px}input,textarea,select{width:100%;padding:10px;border:2px solid #ddd;border-radius:5px;font-size:14px;box-sizing:border-box;transition:border-color .3s}input:focus,textarea:focus,select:focus{border-color:#007bff;outline:0}textarea{height:80px;resize:vertical}.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #eee;color:#777;font-size:12px}.signature{display:flex;gap:20px;margin-top:20px}.signature .form-group{flex:1}@media (max-width:600px){.form-row,.signature{flex-direction:column}.container{padding:20px}input,select{font-size:16px}}.error{border-color:#dc3545 !important}
     </style>
-    <!-- Lazy load libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
@@ -30,7 +31,6 @@
         </div>
 
         <form id="reportForm" novalidate>
-            <!-- بخش اطلاعات بازدیدکننده -->
             <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">اطلاعات بازدیدکننده/پشتیبانی</h3>
             <div class="form-row">
                 <div class="form-group">
@@ -43,7 +43,6 @@
                 </div>
             </div>
 
-            <!-- بخش اطلاعات مشتری -->
             <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">اطلاعات مشتری/محل بازدید</h3>
             <div class="form-row">
                 <div class="form-group">
@@ -60,7 +59,6 @@
                 <input type="text" id="address" name="address" placeholder="آدرس کامل">
             </div>
 
-            <!-- جزئیات بازدید -->
             <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">جزئیات بازدید</h3>
             <div class="form-row">
                 <div class="form-group">
@@ -84,7 +82,6 @@
                 </select>
             </div>
 
-            <!-- مسائل و اقدامات -->
             <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">مسائل مشاهده شده و اقدامات</h3>
             <div class="form-group">
                 <label for="issues">مسائل و مشکلات مشاهده شده:</label>
@@ -99,7 +96,6 @@
                 <textarea id="recommendations" name="recommendations" placeholder="پیشنهادات برای بهبود یا بازدید بعدی..."></textarea>
             </div>
 
-            <!-- وضعیت نهایی -->
             <div class="form-group">
                 <label for="status">وضعیت نهایی:</label>
                 <select id="status" name="status" required>
@@ -111,7 +107,6 @@
                 </select>
             </div>
 
-            <!-- امضا -->
             <h3 style="color:#007bff;border-bottom:1px solid #ddd;padding-bottom:10px;">امضا و تأیید</h3>
             <div class="signature">
                 <div class="form-group">
@@ -136,9 +131,11 @@
     </div>
 
     <script>
-        // PWA: Register Service Worker
+        // PWA: Register Service Worker - FIXED: relative path
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered')).catch(err => console.log('SW failed', err));
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered successfully!'))
+                .catch(err => console.log('SW registration failed:', err));
         }
 
         // Draft Auto-save
@@ -148,7 +145,7 @@
             const draft = Object.fromEntries(data);
             localStorage.setItem('reportDraft', JSON.stringify(draft));
         };
-        form.addEventListener('input', () => setTimeout(saveDraft, 10000)); // هر 10s
+        form.addEventListener('input', () => setTimeout(saveDraft, 10000));
         window.addEventListener('beforeunload', saveDraft);
 
         // Load Draft
@@ -180,9 +177,8 @@
                 alert('لطفاً فیلدهای الزامی را پر کنید.');
                 return;
             }
-            // Pattern check
             const tel = document.getElementById('clientContact');
-            if (tel.value && !tel.pattern.test(tel.value.replace(/[^0-9]/g, ''))) {
+            if (tel.value && !/^\d{11}$/.test(tel.value.replace(/[^0-9]/g, ''))) {
                 tel.classList.add('error');
                 e.preventDefault();
                 alert('شماره تماس نامعتبر است.');
@@ -190,7 +186,7 @@
             }
         });
 
-        // Submit Handler (همان کد قبلی با بهبود)
+        // Submit Handler
         function getStatusText(statusValue) {
             const statusMap = {'resolved':'حل شده','inProgress':'در حال بررسی','pending':'نیاز به پیگیری','escalated':'ارجاع به سطح بالاتر'};
             return statusMap[statusValue] || statusValue;
@@ -222,7 +218,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            // PDF Generation
+            // PDF
             const element = document.querySelector('.container');
             const opt = {
                 margin: 0.5,
@@ -241,7 +237,7 @@
             const body = encodeURIComponent(summary);
             window.open(`mailto:info@innowaveco.ir?subject=${subject}&body=${body}`, '_blank');
 
-            localStorage.removeItem('reportDraft'); // Clear draft
+            localStorage.removeItem('reportDraft');
         });
     </script>
 </body>
