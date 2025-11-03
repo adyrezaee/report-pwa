@@ -1,9 +1,10 @@
-const CACHE_NAME = 'report-pwa-v1';
+const CACHE_NAME = 'report-pwa-v2';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icons/icon-192.png'
+    './',
+    './index.html',
+    './manifest.json',
+    './icons/icon-192.png',
+    './icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
