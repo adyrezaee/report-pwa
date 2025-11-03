@@ -131,7 +131,7 @@
     </div>
 
     <script>
-        // PWA: Register Service Worker - FIXED: relative path
+        // PWA: Register Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('SW registered successfully!'))
@@ -186,7 +186,7 @@
             }
         });
 
-        // Submit Handler
+        // تابع‌های ترجمه
         function getStatusText(statusValue) {
             const statusMap = {'resolved':'حل شده','inProgress':'در حال بررسی','pending':'نیاز به پیگیری','escalated':'ارجاع به سطح بالاتر'};
             return statusMap[statusValue] || statusValue;
@@ -195,6 +195,8 @@
             const purposeMap = {'routine':'بازدید دوره‌ای','complaint':'پشتیبانی بر اساس شکایت','maintenance':'نگهداری و تعمیر','inspection':'بازرسی فنی','other':'سایر'};
             return purposeMap[purposeValue] || purposeValue;
         }
+
+        // Submit Handler - ENHANCED: Full HTML email body
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -203,7 +205,8 @@
 
             console.log('گزارش جدید:', data);
             const statusText = getStatusText(data.status);
-            const summary = `گزارش با موفقیت ذخیره شد!\nشماره: ${data.reportNumber || 'نامشخص'}\nمشتری: ${data.clientName || 'نامشخص'}\nهدف: ${getPurposeText(data.purpose) || 'نامشخص'}\nوضعیت: ${statusText}\nتاریخ: ${data.reportDate}`;
+            const purposeText = getPurposeText(data.purpose);
+            const summary = `گزارش با موفقیت ذخیره شد!\nشماره: ${data.reportNumber || 'نامشخص'}\nمشتری: ${data.clientName || 'نامشخص'}\nهدف: ${purposeText || 'نامشخص'}\nوضعیت: ${statusText}\nتاریخ: ${data.reportDate}`;
             alert(summary);
 
             // JSON Download
@@ -218,7 +221,7 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            // PDF
+            // PDF (مثل قبل)
             const element = document.querySelector('.container');
             const opt = {
                 margin: 0.5,
@@ -232,9 +235,52 @@
                 alert('خطا در تولید PDF. لطفاً از JSON استفاده کنید.');
             });
 
-            // Email
-            const subject = encodeURIComponent(`گزارش بازدید - ${data.reportNumber || 'نامشخص'}`);
-            const body = encodeURIComponent(summary);
+            // ENHANCED: Full HTML Email Body
+            const emailBody = `
+                <html dir="rtl" style="font-family: Tahoma, sans-serif; color: #333; background-color: #f5f7fa;">
+                <body style="margin: 0; padding: 20px; background-color: #f5f7fa;">
+                    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                        <div style="text-align: center; border-bottom: 3px solid #007bff; padding-bottom: 20px; margin-bottom: 30px;">
+                            <h1 style="color: #007bff; font-size: 28px; margin: 0;">🧾 گزارش بازدید و پشتیبانی حضوری</h1>
+                            <p style="color: #666; font-size: 16px;">جزئیات کامل گزارش برای بایگانی و پیگیری</p>
+                        </div>
+
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr style="background-color: #007bff; color: white;">
+                                <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">فیلد</th>
+                                <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">مقدار</th>
+                            </tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">شماره گزارش:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.reportNumber || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">تاریخ گزارش:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.reportDate}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">نام و نام خانوادگی بازدیدکننده:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.visitorName || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">سمت/نقش:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.position || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">نام مشتری:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.clientName || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">شماره تماس:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.clientContact || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">آدرس محل بازدید:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.address || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">ساعت شروع:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.startTime || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">ساعت پایان:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.endTime || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">هدف بازدید:</td><td style="padding: 10px; border: 1px solid #ddd;">${purposeText}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">مسائل و مشکلات:</td><td style="padding: 10px; border: 1px solid #ddd; white-space: pre-wrap;">${data.issues || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">اقدامات انجام شده:</td><td style="padding: 10px; border: 1px solid #ddd; white-space: pre-wrap;">${data.actions || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">توصیه‌ها و پیگیری‌ها:</td><td style="padding: 10px; border: 1px solid #ddd; white-space: pre-wrap;">${data.recommendations || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">وضعیت نهایی:</td><td style="padding: 10px; border: 1px solid #ddd;">${statusText}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">امضای بازدیدکننده:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.visitorSign || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">امضای مشتری:</td><td style="padding: 10px; border: 1px solid #ddd;">${data.clientSign || 'نامشخص'}</td></tr>
+                            <tr><td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">زمان ارسال:</td><td style="padding: 10px; border: 1px solid #ddd;">${new Date(data.timestamp).toLocaleString('fa-IR')}</td></tr>
+                        </table>
+
+                        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #777; font-size: 12px;">
+                            <p>تهیه شده توسط: داده پردازان موج مبتکر | تماس: ۰۹۱۱۱۵۸۲۴۶۶ | ایمیل: info@innowaveco.ir</p>
+                            <p>این گزارش برای بایگانی و پیگیری استفاده شود.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // Email با HTML body
+            const subject = encodeURIComponent(`گزارش بازدید - ${data.reportNumber || 'نامشخص'} - ${data.reportDate}`);
+            const body = encodeURIComponent(emailBody);
             window.open(`mailto:info@innowaveco.ir?subject=${subject}&body=${body}`, '_blank');
 
             localStorage.removeItem('reportDraft');
